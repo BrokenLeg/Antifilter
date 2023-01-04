@@ -6,4 +6,4 @@ Made by:
  - Denys Kyslytsyn
  - Bohdan Abramchuk
  - Nazar Tarnavskyi 
- ...
+ - Savchuk Michael
