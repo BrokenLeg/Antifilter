@@ -54,6 +54,30 @@ def blackWhite(pixel):
 
     return (total, total, total)
 
+def onlyRed(pixel):
+    r, g, b = pixel
+
+    total = (r + g + b) // 3
+
+    return (r, 0, 0)
+
+def onlyBlue(pixel):
+    r, g, b = pixel
+
+    total = (r + g + b) // 3
+
+    return (0, 0, b)
+
+def onlyGreen(pixel):
+    r, g, b = pixel
+
+    total = (r + g + b) // 3
+
+    return (0, g, 0)
+
 blackWhiteFilter = OnePixelFilter(blackWhite)
+redFilter = OnePixelFilter(onlyRed)
+greenFilter = OnePixelFilter(onlyGreen)
+blueFilter = OnePixelFilter(onlyBlue)
 
 
