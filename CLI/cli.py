@@ -1,8 +1,27 @@
 import sys
-sys.path.insert(0, '/Users/deniskyslytsyn/Codebase/Antifilter')
-import argparse
+sys.path.append('../AntiFilter')
 
-def main():
+from os import path
+import argparse
+import Pipeline.pipeline as ppl
+
+def output_img_path(path_to_file):
+    if not (path_to_file[-4:] == '.png' or path_to_file[-4:] == '.jpg' or path_to_file[-5:] == '.jpeg'):
+        raise argparse.ArgumentTypeError(f"readable_file:{path_to_file} is not a valid image")
+    
+    return path_to_file
+
+def input_img_path(path_to_file):
+    if not path.isfile(path_to_file):
+        raise argparse.ArgumentTypeError(f"readable_dir:{path_to_file} is not a valid path")
+    
+    return output_img_path(path_to_file)
+
+
+def setup_and_parse(conveyer: ppl.Pipeline):
+    """
+    Parses stdin and calls corresponding Pipeline methods
+    """
     # Create the top-level parser
     parser = argparse.ArgumentParser(description = "OOP project")
     subparsers = parser.add_subparsers(help='help for subcommand', dest="subcommand")
@@ -17,10 +36,8 @@ def main():
     # Create the parser for 'apply' command
     apply_parser = subparsers.add_parser('apply', help="Apply a filter or a chain of filters")
     apply_parser.add_argument('id', type=int, help='ID of the filter')           
-    apply_parser.add_argument('-i', '--inputfile', nargs='?', type=argparse.FileType('r'),
-                                default=sys.stdin)
-    apply_parser.add_argument('-o', '--outfile', nargs='?', type=argparse.FileType('w'),
-                                default=sys.stdout)
+    apply_parser.add_argument('-i', '--inputfile', nargs='?', type=input_img_path)
+    apply_parser.add_argument('-o', '--outputfile', nargs='?', type=output_img_path)
 
     # Create the parser for 'list' command
     list_parser = subparsers.add_parser('list', help='List all filters and chains with their ids')
@@ -31,12 +48,9 @@ def main():
 
     # Validate the args and call the library
     match args.subcommand:
-        case 'chain':
-            print('Chain hahaha')
+        case 'chain': 
+            conveyer.chain(args.ids, args.saveid)
         case 'apply':
-            print('Apply lolo')
+            conveyer.apply(args.id, args.inputfile, args.outputfile)
         case 'list':
-            print('List lmao')
-
-if __name__ == '__main__':
-    main()
+            conveyer.list()
