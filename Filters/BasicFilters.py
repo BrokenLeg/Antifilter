@@ -74,6 +74,10 @@ class ChainFilter(IFilter):
     def addFilter(self, filt):
         self.filters.append(filt)
 
+    def addFiltersList(self, filtersList):
+        for filt in filtersList:
+            self.addFilter(filt)
+
     def apply(self, srcImage, dstImage):
         for filt in self.filters:
             filt.apply(srcImage, dstImage)
