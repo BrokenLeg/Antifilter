@@ -1,6 +1,8 @@
 import sys
 sys.path.append('../AntiFilter')
 
+import os
+import json
 import Filters.BasicFilters as BF
 
 class Pipeline:
@@ -10,22 +12,22 @@ class Pipeline:
     def __init__(self):
         """
         Init basic filters
-        TODO: deserealize chained filters and store them in dict
         """
-        self.basicFilters = {1 : BF.blackWhiteFilter, 
+        self.filters = {1 : BF.blackWhiteFilter, 
                              2 : BF.redFilter, 
                              3 : BF.greenFilter, 
                              4 : BF.blueFilter}
-        self.chainedFilters = dict()
+        
 
-    def apply(self, filter_id: int, inputfile, outputfile):
+    def apply(self, filter_id: int, inputfile : str, outputfile : str, chainfile : str):
         """
         Applies a filter to an image and saves the output
         """
-        if filter_id in self.basicFilters:
-            filter = self.basicFilters[filter_id]
-        elif filter_id in self.chainedFilters:
-            filter = self.chainedFilters[filter_id]
+        if(chainfile != ""):
+            self.load_chained_filters(chainfile)
+
+        if filter_id in self.filters:
+            filter = self.filters[filter_id]
         else:
             print('There are no such id of filter', file=sys.stderr)
             exit(0)
@@ -40,16 +42,56 @@ class Pipeline:
 
         return
 
-    def chain(self, filter_ids: list[int], saveid: int):
+    def chain(self, filter_ids: list[int], saveid: int, desc: str, chainfile : str):
         """
-        TODO
+        Saves chain in specified json file. Overwrites saveid in file. 
+        When defining chained filter avoid self-usage and situation when filter to be used is defined later. 
+        Example: 5: [1,2,3,4]
+                6: [7,3,4]
+                7: [1,2,5] 
+                8: [2, 8] 
+        Filter 6 uses filter 7, but filter 7 is not defined yet.
+        Filter 8 uses itself, that is forbidden
         """
-        print('chain')
+        if(saveid < len(self.filters)):
+            print(f'Id of filter should be greater than {len(self.filters)}')
+            exit(0)
+
+        loadFileContents = os.path.exists(chainfile) and os.stat(chainfile).st_size > 0
+        
+        chain_data = {}
+
+        if loadFileContents:
+            with open(chainfile, "r") as file:
+                chain_data.update(json.load(file))
+
+        with open(chainfile, "w") as file:            
+            chain_data[saveid] = [filter_ids, desc]
+            json.dump(chain_data, file)
+
         return
 
-    def list(self):
+    def list(self, chainfile : str):
         """
-        TODO
+        Display basic filters and filters 
         """
-        print('list')
+        if(chainfile != ""):
+            self.load_chained_filters(chainfile)
+
+        for filterId, filter in self.filters.items():
+            print(f'[{filterId}]: {filter.getDescription()}\n')
+
         return
+
+    def load_chained_filters(self, chainfile : str):
+        """
+        Loads chained filters from specified file
+        """
+        with open(chainfile, "r") as file:
+            chainData = json.load(file)
+            for chainId, chainFilterData in chainData.items():
+                chainedFilter = BF.ChainFilter()
+                filters = [self.filters[filterId] for filterId in chainFilterData[0]]
+                chainedFilter.addFiltersList(filters)
+                chainedFilter.setDescription(chainFilterData[1])
+                self.filters[int(chainId)] = chainedFilter
