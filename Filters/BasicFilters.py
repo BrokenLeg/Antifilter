@@ -5,10 +5,17 @@ class IFilter:
     def apply(self, srcImage, dstImage):
         pass
 
+    def getDescription(self):
+        pass
+
+    def setDescription(self, description):
+        pass
+
 class OnePixelFilter(IFilter):
 
-    def __init__(self, filterFucntion):
+    def __init__(self, filterFucntion, description):
         self.filterFunction = filterFucntion
+        self.description = description
     
     def apply(self, srcImage, dstImage):
         if (srcImage.size != dstImage.size):
@@ -21,10 +28,17 @@ class OnePixelFilter(IFilter):
             for y in range(srcImage.size[1]):
                 dstImageArray[x, y] = self.filterFunction(srcImageArray[x, y]);
 
+    def getDescription(self):
+        return self.description
+
+    def setDescription(self, description):
+        self.description = description
+
 class CombineFilter(IFilter):
-    def __init__(self, admixedImage, level):
+    def __init__(self, admixedImage, level, description):
         self.admixedImage = admixedImage
         self.level = level
+        self.description = description
 
     def apply(self, srcImage, dstImage):
         if (srcImage.size != dstImage.size):
@@ -46,6 +60,12 @@ class CombineFilter(IFilter):
                     dstImageArray[x, y] = admixImageArray[x, y]
                 else:
                     dstImageArray[x, y] = srcImageArray[x, y]
+
+    def getDescription(self):
+        return self.description
+
+    def setDescription(self, description):
+        self.description = description
 
 class ChainFilter(IFilter):
     def __init__(self):
@@ -76,9 +96,9 @@ def onlyGreen(pixel):
     r, g, b = pixel
     return (0, g, 0)
 
-blackWhiteFilter = OnePixelFilter(blackWhite)
-redFilter = OnePixelFilter(onlyRed)
-greenFilter = OnePixelFilter(onlyGreen)
-blueFilter = OnePixelFilter(onlyBlue)
+blackWhiteFilter = OnePixelFilter(blackWhite, "black and white")
+redFilter = OnePixelFilter(onlyRed, "only red")
+greenFilter = OnePixelFilter(onlyGreen, "only green")
+blueFilter = OnePixelFilter(onlyBlue, "only blue")
 
 
