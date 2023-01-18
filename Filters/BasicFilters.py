@@ -96,9 +96,24 @@ def onlyGreen(pixel):
     r, g, b = pixel
     return (0, g, 0)
 
+def removeRed(pixel):
+    r, g, b = pixel
+    return (0, g, b)
+
+def removeBlue(pixel):
+    r, g, b = pixel
+    return (r, g, 0)
+
+def removeGreen(pixel):
+    r, g, b = pixel
+    return (r, 0, b)
+
 blackWhiteFilter = OnePixelFilter(blackWhite, "black and white")
 redFilter = OnePixelFilter(onlyRed, "only red")
 greenFilter = OnePixelFilter(onlyGreen, "only green")
 blueFilter = OnePixelFilter(onlyBlue, "only blue")
+remRedFilter = OnePixelFilter(removeRed, "remove red")
+remBlueFilter = OnePixelFilter(removeBlue, "remove blue")
+remGreenFilter = OnePixelFilter(removeGreen, "remove green")
 
 
