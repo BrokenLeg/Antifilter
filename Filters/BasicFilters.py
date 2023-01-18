@@ -6,10 +6,10 @@ class IFilter:
         pass
 
     def getDescription(self):
-        pass
+        return self.description
 
     def setDescription(self, description):
-        pass
+        self.description = description
 
 class OnePixelFilter(IFilter):
 
@@ -27,12 +27,6 @@ class OnePixelFilter(IFilter):
         for x in range(srcImage.size[0]):
             for y in range(srcImage.size[1]):
                 dstImageArray[x, y] = self.filterFunction(srcImageArray[x, y]);
-
-    def getDescription(self):
-        return self.description
-
-    def setDescription(self, description):
-        self.description = description
 
 class CombineFilter(IFilter):
     def __init__(self, admixedImage, level, description):
@@ -60,12 +54,6 @@ class CombineFilter(IFilter):
                     dstImageArray[x, y] = admixImageArray[x, y]
                 else:
                     dstImageArray[x, y] = srcImageArray[x, y]
-
-    def getDescription(self):
-        return self.description
-
-    def setDescription(self, description):
-        self.description = description
 
 class ChainFilter(IFilter):
     def __init__(self):
