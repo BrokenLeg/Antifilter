@@ -1,15 +1,17 @@
 from BasicFilters import *
 
 img = Image.open("img.jpg")
-#mix = Image.open("mix.jpg")
 
 properties = (img.size[0], img.size[1])
 result = Image.new('RGB', properties)
 
-#level = float(input("Enter level: "))
-combineFilter = blueFilter
-secondFilter = blackWhiteFilter
+firstFilter = blueFilter
+secondFilter = redFilter
 
-combineFilter.apply(img, result)
-#secondFilter.apply(result, result)
+chain = ChainFilter();
+chain.addFilter(firstFilter)
+chain.addFilter(secondFilter)
+
+chain.apply(img, result)
+
 result.save("result.jpg")

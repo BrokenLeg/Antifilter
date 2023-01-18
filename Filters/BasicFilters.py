@@ -47,32 +47,33 @@ class CombineFilter(IFilter):
                 else:
                     dstImageArray[x, y] = srcImageArray[x, y]
 
+class ChainFilter(IFilter):
+    def __init__(self):
+        self.filters = []
+
+    def addFilter(self, filt):
+        self.filters.append(filt)
+
+    def apply(self, srcImage, dstImage):
+        for filt in self.filters:
+            filt.apply(srcImage, dstImage)
+            srcImage = dstImage;
+
 def blackWhite(pixel):
     r, g, b = pixel
-
     total = (r + g + b)//3
-
     return (total, total, total)
 
 def onlyRed(pixel):
     r, g, b = pixel
-
-    total = (r + g + b) // 3
-
     return (r, 0, 0)
 
 def onlyBlue(pixel):
     r, g, b = pixel
-
-    total = (r + g + b) // 3
-
     return (0, 0, b)
 
 def onlyGreen(pixel):
     r, g, b = pixel
-
-    total = (r + g + b) // 3
-
     return (0, g, 0)
 
 blackWhiteFilter = OnePixelFilter(blackWhite)
